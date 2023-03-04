@@ -5,6 +5,7 @@ import com.db.awmd.challenge.domain.Transfer;
 import com.db.awmd.challenge.exception.AccountNotFoundException;
 import com.db.awmd.challenge.exception.NotEnoughFundsException;
 import com.db.awmd.challenge.exception.TransferSameAccountException;
+import com.db.awmd.challenge.exception.TransferNoAmountException;
 import com.db.awmd.challenge.repository.AccountsRepository;
 import javafx.util.Pair;
 import lombok.Getter;
@@ -41,10 +42,17 @@ public class AccountsService {
   public void transfer(Transfer transfer) throws
     AccountNotFoundException,
     TransferSameAccountException,
-    NotEnoughFundsException {
+    NotEnoughFundsException,
+    TransferNoAmountException {
     if (accountsAreEqual(transfer.getFromAccountId(), transfer.getToAccountId())) {
       throw new TransferSameAccountException(
         "Transfer to the same account (Id: )" + transfer.getFromAccountId() + " is not allowed!"
+      );
+    }
+
+    if (transfer.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+      throw new TransferNoAmountException(
+        "Transfer amount must be greater than zero!"
       );
     }
 
@@ -89,6 +97,6 @@ public class AccountsService {
 }
 
   private boolean accountsAreEqual(String fromAccount, String toAccount) {
-    return !fromAccount.equals(toAccount);
+    return fromAccount.equals(toAccount);
   }
 }

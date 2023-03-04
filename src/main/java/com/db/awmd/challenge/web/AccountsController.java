@@ -2,10 +2,7 @@ package com.db.awmd.challenge.web;
 
 import com.db.awmd.challenge.domain.Account;
 import com.db.awmd.challenge.domain.Transfer;
-import com.db.awmd.challenge.exception.AccountNotFoundException;
-import com.db.awmd.challenge.exception.DuplicateAccountIdException;
-import com.db.awmd.challenge.exception.NotEnoughFundsException;
-import com.db.awmd.challenge.exception.TransferSameAccountException;
+import com.db.awmd.challenge.exception.*;
 import com.db.awmd.challenge.service.AccountsService;
 
 import javax.validation.Valid;
@@ -59,7 +56,7 @@ public class AccountsController {
       this.accountsService.transfer(transfer);
     } catch (AccountNotFoundException e) {
       return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-    } catch (TransferSameAccountException | NotEnoughFundsException e) {
+    } catch (TransferSameAccountException | NotEnoughFundsException | TransferNoAmountException e) {
       return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
@@ -20,8 +19,7 @@ public class Transfer {
   @NotEmpty
   private String toAccountId;
 
-  @NotEmpty
-  @Min(value = 0, message = "Transfer amount must be positive.")
+  @NotNull
   private BigDecimal amount;
 
   @JsonCreator

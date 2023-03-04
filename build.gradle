@@ -25,5 +25,10 @@ repositories {
 dependencies {
   compile("org.springframework.boot:spring-boot-starter-web")
   compileOnly("org.projectlombok:lombok")
+  annotationProcessor 'org.projectlombok:lombok:1.18.8'
   testCompile("org.springframework.boot:spring-boot-starter-test")
+}
+
+springBoot {
+  mainClass = 'com.db.awmd.challenge.DevChallengeApplication'
 }

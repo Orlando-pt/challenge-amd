@@ -1,9 +1,15 @@
 package com.db.awmd.challenge.web;
 
 import com.db.awmd.challenge.domain.Account;
+import com.db.awmd.challenge.domain.Transfer;
+import com.db.awmd.challenge.exception.AccountNotFoundException;
 import com.db.awmd.challenge.exception.DuplicateAccountIdException;
+import com.db.awmd.challenge.exception.NotEnoughFundsException;
+import com.db.awmd.challenge.exception.TransferSameAccountException;
 import com.db.awmd.challenge.service.AccountsService;
+
 import javax.validation.Valid;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,7 +39,7 @@ public class AccountsController {
     log.info("Creating account {}", account);
 
     try {
-    this.accountsService.createAccount(account);
+      this.accountsService.createAccount(account);
     } catch (DuplicateAccountIdException daie) {
       return new ResponseEntity<>(daie.getMessage(), HttpStatus.BAD_REQUEST);
     }
@@ -41,10 +47,33 @@ public class AccountsController {
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
 
+  @PostMapping(path = "/transfer", consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Object> transfer(@RequestBody @Valid Transfer transfer) {
+    log.info(
+      "Transferring funds from account with id {} to account with id {}",
+      transfer.getFromAccountId(),
+      transfer.getToAccountId()
+    );
+
+    try {
+      this.accountsService.transfer(transfer);
+    } catch (AccountNotFoundException e) {
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    } catch (TransferSameAccountException | NotEnoughFundsException e) {
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    return new ResponseEntity<>(HttpStatus.OK);
+  }
+
   @GetMapping(path = "/{accountId}")
-  public Account getAccount(@PathVariable String accountId) {
+  public ResponseEntity<Object> getAccount(@PathVariable String accountId) {
     log.info("Retrieving account for id {}", accountId);
-    return this.accountsService.getAccount(accountId);
+    try {
+      return ResponseEntity.ok().body(this.accountsService.getAccount(accountId));
+    } catch (AccountNotFoundException e) {
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
   }
 
 }

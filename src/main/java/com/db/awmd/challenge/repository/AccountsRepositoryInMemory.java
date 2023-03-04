@@ -3,6 +3,7 @@ package com.db.awmd.challenge.repository;
 import com.db.awmd.challenge.domain.Account;
 import com.db.awmd.challenge.exception.DuplicateAccountIdException;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Repository;
 
@@ -21,8 +22,8 @@ public class AccountsRepositoryInMemory implements AccountsRepository {
   }
 
   @Override
-  public Account getAccount(String accountId) {
-    return accounts.get(accountId);
+  public Optional<Account> getAccount(String accountId) {
+    return Optional.ofNullable(accounts.get(accountId));
   }
 
   @Override
@@ -30,4 +31,8 @@ public class AccountsRepositoryInMemory implements AccountsRepository {
     accounts.clear();
   }
 
+  @Override
+  public Account updateAccount(Account account) {
+    return accounts.put(account.getAccountId(), account);
+  }
 }
